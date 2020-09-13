@@ -1,0 +1,26 @@
+
+## command to create the cluster
+kops create cluster \                                                                                                     
+--node-count=1 \
+--node-size=t2.micro \
+--master-size=t2.micro \
+--zones=us-east-1a \
+--name=kub-dev-001.k8s.local;
+
+kops update cluster --name teste.k8s.local --yes;
+
+
+## create aws repository
+aws ecr create-repository \
+    --repository-name api-start-wars-teste \
+    --image-scanning-configuration scanOnPush=true \
+    --region us-east-1
+
+
+## push repository on api folder 
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 773364929699.dkr.ecr.us-east-1.amazonaws.com
+docker build -t api-start-wars-teste .
+docker tag api-start-wars-teste:latest 773364929699.dkr.ecr.us-east-1.amazonaws.com/api-start-wars-teste:latest
+docker push 773364929699.dkr.ecr.us-east-1.amazonaws.com/api-start-wars-teste:latest
+
+
